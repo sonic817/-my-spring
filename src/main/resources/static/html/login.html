@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no,
+  maximum-scale=1.0, minimum-scale=1.0">
+
+    <!-- 로그인 인증 -->
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>awesomepia</title>
+<!--    <link rel="shortcut icon" href="static/public/img/logo.png" />-->
+    <meta name="description" content="">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"> </script>
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+<!--    <link rel="stylesheet" href="css/flaticon.css">-->
+    <!-- <link rel="stylesheet" href="/static/public/css/style.css"> -->
+    <link rel="stylesheet" href="/css/new.css">
+
+</head>
+
+<body>
+
+<!-- margin bottom: mb-50 -->
+
+
+<!-- header  -->
+<div class="container"> <!-- no scroll -->
+
+    <div class="row justify-content-center text-center">
+
+        <div class="section_title">
+
+            <div class="mt-10" id="header">
+                <h3>로그인</h3>
+            </div>
+			<form action="/auth/login" method="post">
+	            <div class="" id="Login">
+	                <div class="mt-20">
+	                    <input type="text" name="id" placeholder="이메일 입력" required="" class="single-input">
+	                </div>
+	
+	                <div class="mt-10">
+	                    <input type="password" name="password" placeholder="비밀번호 입력" required="" class="single-input">
+	                </div>
+	
+	                <div class="mt-10">
+	                    <button type="submit" class="genric-btn success radius" id="btn_start">
+	                        로그인
+	                    </button>
+	                </div>
+	            </div>
+			</form>
+
+            <div class="mt-10" id="findLogin">
+                <a href="#" class="genric-btn link radius">아이디 찾기</a>
+                <a href="#" class="genric-btn link radius">비밀번호 찾기</a>
+            </div>
+
+
+            <!-- 4가지 로그인 삽입 -->
+            <div class="mt-10" id="easyLogin">
+
+                <div class="easyLogin-text">
+                    <hr width = "30%" color = "black">
+                    <span width = "30%">간편 로그인</span>
+                    <hr width = "30%" color = "black">
+                </div>
+
+
+                <div class="socail_links" >
+
+                    <ul>
+                        <li >
+                            <a href="javascript:;" class="btn_social" data-social="facebook">페이스북</a>
+<!--                            <a href="https://www.facebook.com/v2.8/dialog/oauth?response_type=code&client_id=476618550579635&scope=email&state=-dA0No72Pqm7ETXOPXRUnZU1aXj4C7YbwUUmteEBD34%3D&redirect_uri=https://dev.auth.awesomeserver.kr/login/oauth2/code/facebook" class="btn_social">페이스북</a>-->
+                        </li>
+                        <li >
+                            <a href="javascript:void(0);" class="btn_social" data-social="google">구글</a>
+                        </li>
+                        <li >
+                            <a href="javascript:;" class="btn_social" data-social="kakao">카카오톡</a>
+                        </li>
+                        <li >
+                            <div id="appleid-signin" data-color="black" data-border="true" data-type="sign in" style="height: 40px; width: 10%;"></div>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+
+            <div class="mt-120" id="Join">
+                <div class="mt-20">
+                    아직 회원이 아니신가요?
+                </div>
+
+                <div class="mt-10">
+                    <button class="genric-btn success radius" id="btn_join">
+                        이메일로 가입하기
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+<!-- header  end-->
+
+
+<!-- ////////////////////////////////////////////////////////////////// -->
+
+
+
+<script>
+    let socials = document.getElementsByClassName("btn_social");
+    for(let social of socials) {
+        social.addEventListener('click', function(){
+        	//var redirect_uri = window.location.protocol+"//"+window.location.host+"/auth/oauth2";
+        	var redirect_uri =  "https://auth.awesomeserver.kr/auth/oauth2";
+            let socialType = this.getAttribute('data-social');
+            console.log("redirect_uri : " + redirect_uri);
+            console.log("send_uri : " + "https://auth.awesomeserver.kr/oauth2/authorization/"+socialType+"?redirect_uri="+redirect_uri);
+            
+            //location.href=window.location.protocol+"//"+window.location.host+"/oauth2/authorization/" + socialType+"?redirect_uri="+redirect_uri ;	
+            location.href="https://auth.awesomeserver.kr/oauth2/authorization/"+socialType+"?redirect_uri="+redirect_uri;
+        })
+    }
+    
+    function login(){
+    	alert();
+    }
+</script>
+<script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+<script type="text/javascript">
+    AppleID.auth.init({
+        clientId : '[[${client_id}]]',
+        scope : 'name email',
+        redirectURI : '[[${redirect_uri}]]',
+        state : 'test',
+        nonce : '[[${nonce}]]',
+        usePopup : false
+    });
+</script>
+</body>
+
+</html>
