@@ -37,6 +37,7 @@ public class TestController {
     ) throws Exception {
         JSONObject jSONOResponse = new JSONObject();
         jSONOResponse.put("test", "test");
+        jSONOResponse.put("test", "test");
         return jSONOResponse;
     }
 }
