@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,24 +25,27 @@ public class TestController {
     TestService testService;
 
     @GetMapping("/")
-    public String summernote() {
+    public String summernote(
+            //@RequestParam("userCodeNo") Integer userCodeNo
+    ) {
         return "/summernote";
     }
+
 
     //region
     @PostMapping("/p")
     @ResponseBody
-    public JSONObject postQQQ(
-            @ApiIgnore HttpSession session,
-            HttpServletRequest request, HttpServletResponse response,
-            @RequestParam("userCodeNo") Integer userCodeNo
-    ) throws Exception {
-        JSONObject jSONOResponse = testService.postQQQ(userCodeNo);
-        return jSONOResponse;
+    public void postQQQ(
+            @ApiIgnore HttpSession session, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam("userCodeNo") Integer userCodeNo,
+            @RequestParam("htmlCode") String htmlCode
+    ) throws ParseException {
+        JSONObject jSONOResponse = testService.postQQQ(userCodeNo, htmlCode);
     }
 
+
     //region
-    @GetMapping("/qqq")
+    @GetMapping("/p")
     @ResponseBody
     public JSONObject getQQQ(
             @ApiIgnore HttpSession session, HttpServletRequest request, HttpServletResponse response,

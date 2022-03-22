@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.awesomepia.auth.mapper.UserCodeMapper">
+<mapper namespace="com.example.demo.mapper.TestMapper">
 
-    <insert id="postQQQ">
-        insert into user_session (user_code_no) values(#{userCodeNo})
+    <insert id="asd">
+        insert into user_session (user_code_no, session) values(#{userCodeNo}, #{htmlCode})
         ;
     </insert>
 

@@ -46,32 +46,49 @@ $('.summernote').summernote({
 		    // 코드보기
 		    ['view', ['codeview']]
 		  ],
-		  // 추가한 글꼴
 		fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
-		 // 추가한 폰트사이즈
-		fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
-
+		fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72'],
 	});
 </script>
 
 <script>
 function sendPost() {
+    var userCodeNo = window.location.search.replace("?userCodeNo=", "");
+
     var form = document.createElement('form');
     form.setAttribute('method', 'post'); //POST 메서드 적용
-    form.setAttribute('action', "http://localhost:8080/qqq");	// 데이터를 전송할 url
+    form.setAttribute('action', "http://localhost:8080/p");	// 데이터를 전송할 url
     document.charset = "utf-8";
+
     var hiddenField = document.createElement('input');
     hiddenField.setAttribute('type', 'hidden'); //값 입력
     hiddenField.setAttribute('name', "userCodeNo");
-    hiddenField.setAttribute('value', 2);
+    hiddenField.setAttribute('value', userCodeNo);
     form.appendChild(hiddenField);
+
+    var hiddenField = document.createElement('input');
+    hiddenField.setAttribute('type', 'hidden'); //값 입력
+    hiddenField.setAttribute('name', "htmlCode");
+    hiddenField.setAttribute('value', saveContent());
+    form.appendChild(hiddenField);
+
     document.body.appendChild(form);
-    form.submit();	// 전송~
+    form.submit();
+}
+
+function saveContent() {
+    var summernoteCode = $('#summernote').summernote('code');
+    return summernoteCode;
+}
+
+function sendPost2() {
+    var summernoteCode = $('#summernote').summernote('code');
+    return console.log(summernoteCode);
 }
 </script>
 
 <div class="col-md-3">
-    <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>
+        <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>
 </div>
 
 </body>
