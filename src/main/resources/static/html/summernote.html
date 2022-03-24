@@ -1,117 +1,125 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <title>SummerNoteExample</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <head>
+        <title>SummerNoteExample</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- 서머노트를 위해 추가해야할 부분 -->
-                    <script src="../summernote/summernote-lite.js"></script>
-                    <script src="../summernote/lang/summernote-ko-KR.js"></script>
-    <link rel="stylesheet" href="../summernote/summernote-lite.css">
-    <!--  -->
+        <!-- 서머노트를 위해 추가해야할 부분 -->
+                        <script src="../summernote/summernote-lite.js"></script>
+                        <script src="../summernote/lang/summernote-ko-KR.js"></script>
+        <link rel="stylesheet" href="../summernote/summernote-lite.css">
+        <!--  -->
+    </head>
 
-</head>
-<body>
-<div class="container">
-    <textarea class="summernote" id="summernote"></textarea>
-</div>
-<script>
-$('.summernote').summernote({
-	  // 에디터 높이
-	  height: 150,
-	  // 에디터 한글 설정
-	  lang: "ko-KR",
-	  // 에디터에 커서 이동 (input창의 autofocus라고 생각하시면 됩니다.)
-	  focus : true,
-	  toolbar: [
-		    // 글꼴 설정
-		    //['fontname', ['fontname']],
-		    // 글자 크기 설정
-		    ['fontsize', ['fontsize']],
-		    // 굵기, 기울임꼴, 밑줄,취소 선
-		    ['style', ['bold', 'italic', 'underline','strikethrough']],
-		    // 글자색
-		    ['color', ['forecolor','color']],
-		    // 글머리 기호, 번호매기기, 문단정렬
-		    ['para', ['ul', 'ol', 'paragraph']],
-		    // 줄간격
-		    ['height', ['height']],
-		    // 그림첨부, 링크만들기
-		    ['insert',['picture','link']],
-		    // 코드보기
-		    ['view', ['codeview']]
-		  ],
-		fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
-		fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72'],
-        callbacks : {
-            onImageUpload : function(files, editor, welEditable) {
-        // 파일 업로드(다중업로드를 위해 반복문 사용)
-        for (var i = files.length - 1; i >= 0; i--) {
-        uploadSummernoteImageFile(files[i],
-        this);
-            }
+    <body>
+        <div class="container">
+            <textarea class="summernote" id="summernote"></textarea>
+        </div>
+
+        <script>
+        $(document).ready(function() {
+
+            var toolbar = [
+                    // 글꼴 설정
+                    ['fontname', ['fontname']],
+                    // 글자 크기 설정
+                    ['fontsize', ['fontsize']],
+                    // 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
+                    ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+                    // 글자색
+                    ['color', ['forecolor','color']],
+                    // 표만들기
+                    ['table', ['table']],
+                    // 글머리 기호, 번호매기기, 문단정렬
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    // 줄간격
+                    ['height', ['height']],
+                    // 그림첨부, 링크만들기, 동영상첨부
+                    ['insert',['picture','link','video']],
+                    // 코드보기, 확대해서보기, 도움말
+                    ['view', ['codeview','fullscreen', 'help']]
+                  ];
+
+            var setting = {
+                    height : 300,
+                    minHeight : null,
+                    maxHeight : null,
+                    focus : true,
+                    lang : 'ko-KR',
+                    toolbar : toolbar,
+                    callbacks : {
+                        onImageUpload : function(files, editor, welEditable) {
+                            // 파일 업로드(다중업로드를 위해 반복문 사용)
+                            for (var i = files.length - 1; i >= 0; i--) {
+                                uploadSummernoteImageFile(files[i],
+                                this);
+                                }
+                            }
+                        }
+                 };
+                $('#summernote').summernote(setting);
+                });
+
+                function sendFile(file) {
+                //function sendFile(file, el) {
+                    data = new FormData();
+                    data.append("file", file);
+                    $.ajax({
+                        url : "http://localhost:8090/uploadSummernoteImageFile",
+                        type : "POST",
+                        enctype : 'multipart/form-data',
+                        data : data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success : function(image) {
+                            $('#summernote').summernote('insertImage', image);
+                            //$(el).summernote('editor.insertImage', data.url);
+                        }
+                    });
+                }
+        </script>
+
+        <script>
+        function sendPost() {
+            var userCodeNo = window.location.search.replace("?userCodeNo=", "");
+
+            var form = document.createElement('form');
+            form.setAttribute('method', 'post'); //POST 메서드 적용
+            form.setAttribute('action', "http://localhost:8080/p");	// 데이터를 전송할 url
+            document.charset = "utf-8";
+
+            var hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden'); //값 입력
+            hiddenField.setAttribute('name', "userCodeNo");
+            hiddenField.setAttribute('value', userCodeNo);
+            form.appendChild(hiddenField);
+
+            var hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden'); //값 입력
+            hiddenField.setAttribute('name', "htmlCode");
+            hiddenField.setAttribute('value', saveContent());
+            form.appendChild(hiddenField);
+
+            document.body.appendChild(form);
+            form.submit();
         }
-    }
-});
 
-$('#summernote').summernote(setting);
-
-function uploadSummernoteImageFile(file, el) {
-    data = new FormData();
-    data.append("file", file);
-    $.ajax({
-        data : data,
-        type : "POST",
-        url : "uploadSummernoteImageFile",
-        contentType : false,
-        enctype : 'multipart/form-data',
-        processData : false,
-        success : function(data) {
-            $(el).summernote('editor.insertImage', data.url);
+        function saveContent() {
+            var summernoteCode = $('#summernote').summernote('code');
+            return summernoteCode;
         }
-    });
-}
-</script>
+        </script>
 
-<script>
-function sendPost() {
-    var userCodeNo = window.location.search.replace("?userCodeNo=", "");
+        <div class="col-md-3">
+        <!--        <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>-->
+                <button type="button" onclick="sendFile()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>
+        </div>
 
-    var form = document.createElement('form');
-    form.setAttribute('method', 'post'); //POST 메서드 적용
-    form.setAttribute('action', "http://localhost:8080/p");	// 데이터를 전송할 url
-    document.charset = "utf-8";
-
-    var hiddenField = document.createElement('input');
-    hiddenField.setAttribute('type', 'hidden'); //값 입력
-    hiddenField.setAttribute('name', "userCodeNo");
-    hiddenField.setAttribute('value', userCodeNo);
-    form.appendChild(hiddenField);
-
-    var hiddenField = document.createElement('input');
-    hiddenField.setAttribute('type', 'hidden'); //값 입력
-    hiddenField.setAttribute('name', "htmlCode");
-    hiddenField.setAttribute('value', saveContent());
-    form.appendChild(hiddenField);
-
-    document.body.appendChild(form);
-    form.submit();
-}
-
-function saveContent() {
-    var summernoteCode = $('#summernote').summernote('code');
-    return summernoteCode;
-}
-</script>
-
-<div class="col-md-3">
-        <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>
-</div>
-
-</body>
+    </body>
 </html>
