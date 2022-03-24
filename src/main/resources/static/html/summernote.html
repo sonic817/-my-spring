@@ -1,91 +1,105 @@
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <title>SummerNoteExample</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-        <!-- 서머노트를 위해 추가해야할 부분 -->
-                        <script src="../summernote/summernote-lite.js"></script>
-                        <script src="../summernote/lang/summernote-ko-KR.js"></script>
-        <link rel="stylesheet" href="../summernote/summernote-lite.css">
-        <!--  -->
-    </head>
+<head>
+    <title>SummerNoteExample</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <body>
-        <div class="container">
-            <textarea class="summernote" id="summernote"></textarea>
-        </div>
+    <!-- 서머노트를 위해 추가해야할 부분 -->
+    <script src="../summernote/summernote-lite.js"></script>
+    <script src="../summernote/lang/summernote-ko-KR.js"></script>
+    <link rel="stylesheet" href="../summernote/summernote-lite.css">
+    <!--  -->
+</head>
 
-        <script>
-        $(document).ready(function() {
+<body>
+<div class="container">
+    <textarea class="summernote" id="summernote"></textarea>
+</div>
+
+<script>
+        $(document).ready(function () {
 
             var toolbar = [
-                    // 글꼴 설정
-                    ['fontname', ['fontname']],
-                    // 글자 크기 설정
-                    ['fontsize', ['fontsize']],
-                    // 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
-                    ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
-                    // 글자색
-                    ['color', ['forecolor','color']],
-                    // 표만들기
-                    ['table', ['table']],
-                    // 글머리 기호, 번호매기기, 문단정렬
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    // 줄간격
-                    ['height', ['height']],
-                    // 그림첨부, 링크만들기, 동영상첨부
-                    ['insert',['picture','link','video']],
-                    // 코드보기, 확대해서보기, 도움말
-                    ['view', ['codeview','fullscreen', 'help']]
-                  ];
+                // 글꼴 설정
+                ['fontname', ['fontname']],
+                // 글자 크기 설정
+                ['fontsize', ['fontsize']],
+                // 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
+                //['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                ['style', ['bold', 'italic', 'underline']],
+                // 글자색
+                //['color', ['forecolor', 'color']],
+                ['color', ['forecolor']],
+                // 표만들기
+                //['table', ['table']],
+                // 글머리 기호, 번호매기기, 문단정렬
+                //['para', ['ul', 'ol', 'paragraph']],
+                // 줄간격
+                //['height', ['height']],
+                // 그림첨부, 링크만들기, 동영상첨부
+                //['insert', ['picture', 'link', 'video']],
+                ['insert', ['picture']],
+                // 코드보기, 확대해서보기, 도움말
+                //['view', ['codeview', 'fullscreen', 'help']]
+                ['view', ['codeview']]
+            ];
 
             var setting = {
-                    height : 300,
-                    minHeight : null,
-                    maxHeight : null,
-                    focus : true,
-                    lang : 'ko-KR',
-                    toolbar : toolbar,
-                    callbacks : {
-                        onImageUpload : function(files, editor, welEditable) {
-                            // 파일 업로드(다중업로드를 위해 반복문 사용)
-                            for (var i = files.length - 1; i >= 0; i--) {
-                                uploadSummernoteImageFile(files[i],
-                                this);
-                                }
-                            }
-                        }
-                 };
-                $('#summernote').summernote(setting);
-                });
+                height: 600,
+                minHeight: null,
+                maxHeight: null,
+                focus: true,
+                lang: 'ko-KR',
+                toolbar: toolbar,
+                callbacks: {
+                	onImageUpload : function(files) {
+                		sendFile(files[0], this);
+					}
 
-                function sendFile(file) {
-                //function sendFile(file, el) {
-                    data = new FormData();
-                    data.append("file", file);
-                    $.ajax({
-                        url : "http://localhost:8090/uploadSummernoteImageFile",
-                        type : "POST",
-                        enctype : 'multipart/form-data',
-                        data : data,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success : function(image) {
-                            $('#summernote').summernote('insertImage', image);
-                            //$(el).summernote('editor.insertImage', data.url);
-                        }
-                    });
+                    //onImageUpload: function(){ //} (files, editor, welEditable) {
+                        // 파일 업로드(다중업로드를 위해 반복문 사용)
+                        //for (var i = files.length - 1; i >= 0; i--) {
+                            //sendFile(files[i], this);
+                        //}
+                    //}
                 }
-        </script>
+            };
 
-        <script>
+            $('#summernote').summernote(setting);
+        });
+
+        /**
+    	* 이미지 파일 업로드
+    	*/
+    	function sendFile(file) {
+    		var userCodeNo = 2;
+    		data = new FormData();
+    		data.append("file", file);
+    		data.append("userCodeNo", userCodeNo);
+    		$.ajax({
+    			data : data,
+    			type : "POST",
+    			url: "trip-diary",
+                cache: false,
+    			contentType : false,
+    			processData : false,
+    			success : async function(data) {
+                	//alert(data.url);
+                	//console.log(data);
+                    var image = $('<img>').attr('src', data.url);
+                    $('#summernote').summernote("insertNode", image[0]);
+    			}
+    		});
+    	}
+    </script>
+
+<script>
         function sendPost() {
             var userCodeNo = window.location.search.replace("?userCodeNo=", "");
 
@@ -114,12 +128,13 @@
             var summernoteCode = $('#summernote').summernote('code');
             return summernoteCode;
         }
-        </script>
+    </script>
 
-        <div class="col-md-3">
-        <!--        <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>-->
-                <button type="button" onclick="sendFile()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>
-        </div>
+<div class="col-md-3">
+    <!--        <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>-->
+    <button type="button" onclick="sendFile()" class="btn btn-success btn-lg" id="saveBtn">작성</button>
+</div>
 
-    </body>
+</body>
+
 </html>

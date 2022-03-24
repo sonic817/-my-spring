@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.UUID;
 
 @Controller
@@ -67,36 +68,19 @@ public class TestController {
     }
 
 
-    @RequestMapping(value="/uploadSummernoteImageFile", produces = "application/json; charset=utf8")
+    @PostMapping("/trip-diary")
+//	@ApiImplicitParams({
+//			@ApiImplicitParam(name = "mRequest", value = "다중파일객체", required = true, paramType = "MultipartHttpServletRequest"),
+//			@ApiImplicitParam(name = "bodyData", value = "userCodeNo, placeName, placeText, placeLatitude, placeLongitude, placeCategory, placetag", required = true),
+//	})
     @ResponseBody
-    public JSONObject uploadSummernoteImageFile(@RequestParam("file") MultipartFile multipartFile, HttpServletRequest request )  {
-        JSONObject jsonObject = new JSONObject();
-
-        /*
-         * String fileRoot = "C:\\summernote_image\\"; // 외부경로로 저장을 희망할때.
-         */
-
-        // 내부경로로 저장
-        String contextRoot = new HttpServletRequestWrapper(request).getRealPath("/");
-        String fileRoot = contextRoot + "resources/fileupload/";
-
-        String originalFileName = multipartFile.getOriginalFilename();    //오리지날 파일명
-        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));    //파일 확장자
-        String savedFileName = UUID.randomUUID() + extension;    //저장될 파일 명
-
-        File targetFile = new File(fileRoot + savedFileName);
-        try {
-            InputStream fileStream = multipartFile.getInputStream();
-//            FileUtils.c/opyInputStreamToFile(fileStream, targetFile);	//파일 저장
-            jsonObject.put("url", "/summernote/resources/fileupload/" + savedFileName); // contextroot + resources + 저장할 내부 폴더명
-            jsonObject.put("responseCode", "success");
-
-        } catch (IOException e) {
-//            FileUtils.deleteQuietly(targetFile);	//저장된 파일 삭제
-            jsonObject.put("responseCode", "error");
-            e.printStackTrace();
-        }
-
-        return jsonObject;
+    public JSONObject tripDiary(
+            @RequestParam("file") MultipartFile multipartFile,
+			@RequestParam("userCodeNo") Integer userCodeNo
+//            HttpServletResponse response
+    ) throws ParseException, IOException {
+        JSONObject jSONOResponse = new JSONObject();
+        jSONOResponse = testService.tripDiary(multipartFile, userCodeNo);
+        return jSONOResponse;
     }
 }

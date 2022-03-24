@@ -13,6 +13,9 @@ repositories {
 }
 
 dependencies {
+	//2022 03 24 1951 이강원 썸머노트 관련
+	implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
