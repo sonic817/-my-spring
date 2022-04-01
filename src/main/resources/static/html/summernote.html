@@ -97,7 +97,7 @@
     			}
     		});
     	}
-    </script>
+</script>
 
 <script>
         function sendPost() {
@@ -128,13 +128,39 @@
             var summernoteCode = $('#summernote').summernote('code');
             return summernoteCode;
         }
-    </script>
+</script>
+
+<script>
+    var httpRequest;
+	document.getElementById("ajaxCall").addEventListener('click', () => {
+		var reqJson = new Object();
+		reqJson = {'dfd':'dfsd',}
+		httpRequest = new XMLHttpRequest();
+	    httpRequest.onreadystatechange = () => {
+		    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+			      if (httpRequest.status === 200) {
+			    	var result = httpRequest.response;
+                    document.getElementById("name").innerText = "result.name";
+			      } else {
+			        alert('request에 뭔가 문제가 있어요.');
+			      }
+			}
+	    };
+
+	    /* Post 방식으로 요청 */
+	    /* Response Type을 Json으로 사전 정의 */
+	    /* 요청 Header에 컨텐츠 타입은 Json으로 사전 정의 */
+	    /* 정의된 서버에 Json 형식의 요청 Data를 포함하여 요청을 전송 */
+	    httpRequest.open('POST', '/postAgeByName', true);
+	    httpRequest.responseType = "json";
+	    httpRequest.setRequestHeader('Content-Type', 'application/json');
+	    httpRequest.send(JSON.stringify(reqJson));
+	});
+</script>
 
 <div class="col-md-3">
     <!--        <button type="button" onclick="sendPost()" class="btn btn-success btn-lg" id = "saveBtn">작성</button>-->
-    <button type="button" onclick="sendFile()" class="btn btn-success btn-lg" id="saveBtn">작성</button>
+    <button type="button" onclick="sendFile()" class="btn btn-success btn-lg" id="ajaxCall">작성</button>
 </div>
-
 </body>
-
 </html>

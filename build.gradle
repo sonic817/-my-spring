@@ -13,8 +13,14 @@ repositories {
 }
 
 dependencies {
-	//2022 03 24 1951 이강원 썸머노트 관련
+	//이강원 썸머노트
 	implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
+	//이강원 파이어베이스
+	implementation 'com.google.firebase:firebase-admin:6.8.1'
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
