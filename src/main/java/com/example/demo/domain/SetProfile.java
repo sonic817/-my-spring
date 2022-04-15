@@ -4,14 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter // getter를 자동 생성
 @Setter // setter를 자동 생성
 @ToString // toString을 자동 생성
-public class GetCategory {
-    private Integer categoryNo;
-    private String categoryName;
-    private String categoryKindsNo;
-    private Integer categoryUseflag;
+public class SetProfile {
+    private Integer userCodeNo;
+    private Integer profileNo;
+    private String profileCode;
+    private Integer profileImgNo;
+    private Integer profileBImgNo;
     private String insertTs;
     private String updateTs;
 }

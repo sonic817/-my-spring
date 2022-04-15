@@ -2,125 +2,92 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.TestMapper">
 
-    <insert id="asd">
-        insert into user_session (user_code_no, session) values(#{userCodeNo}, #{htmlCode})
-        ;
-    </insert>
-
-    <select id="getCountryList" resultType="com.example.demo.domain.GetCountry">
+    <select id="getNewCode" resultType="String">
         SELECT
-            c.country_no,
-            c.country_code,
-            c.country_name_kr,
-            c.country_name_en,
-            c.insert_ts,
-            c.update_ts,
-            '' as area_list
-        FROM country AS c
-        ;
-    </select>
-
-    <select id="getAreaList" resultType="com.example.demo.domain.GetArea">
-        SELECT
-        a.country_no,
-        a.area_no,
-        a.area_name_kr,
-        a.area_name_en,
-        a.area_useflag,
-        a.insert_ts,
-        a.update_ts,
-        '' as region_list
-        FROM area AS a
-        WHERE a.country_no = #{countryNo}
-        ;
-    </select>
-
-    <select id="getRegionList" resultType="com.example.demo.domain.GetRegion">
-        SELECT
-        r.area_no,
-        r.region_no,
-        r.region_no_kr,
-        r.region_no_en,
-        r.region_useflag,
-        r.insert_ts,
-        r.update_ts,
-        '' as area_list
-        FROM region AS r
-        WHERE r.area_no = #{areaNo}
-        ;
-    </select>
-
-    <select id="getPlaceCategory" resultType="com.example.demo.domain.GetCategory">
-        SELECT
-        c.category_no,
-        c.category_name,
-        c.category_kinds_no,
-        p.insert_ts,
-        p.update_ts
+        p.trip_place_code
         FROM
-        trip_place_category AS p LEFT JOIN category AS c ON p.category_no = c.category_no
+        trip_place AS p
         WHERE
-        trip_place_no = #{tripNo}
+        p.user_code_no = #{userCodeNo} and p.trip_place_code like CONCAT('%',#{today},'%')
+        ORDER BY
+        p.trip_place_no desc
+        LIMIT 1
         ;
     </select>
 
-    <insert id="insertTripCourseDiaryLike">
-        insert INTO trip_course_diary_like
-        (user_code_no, trip_course_diary_no)
+    <insert id="insertTripPlace" parameterType="com.example.demo.domain.SetPlace" useGeneratedKeys="true" keyProperty="tripPlaceNo">
+        INSERT INTO trip_place
+        (user_code_no, trip_place_code, trip_place_name, trip_place_add0, trip_place_add1,
+            trip_place_add2, trip_place_add3, trip_place_text, trip_place_latitude, trip_place_longitude,
+            trip_place_get_path, trip_place_set_path)
         VALUES
-        (#{userCodeNo}, #{tripCourseDiaryNo})
+        (#{userCodeNo}, #{tripPlaceCode}, #{tripPlaceName}, #{tripPlaceAdd0}, #{tripPlaceAdd1},
+            #{tripPlaceAdd2}, #{tripPlaceAdd3}, #{tripPlaceText}, #{tripPlaceLatitude}, #{tripPlaceLongitude},
+            #{tripPlaceGetPath}, #{tripPlaceSetPath})
         ;
     </insert>
 
-    <delete id="deleteTripCourseDiaryLike">
-        delete from trip_course_diary_like
+    <insert id="insertPlaceImgN">
+        INSERT INTO trip_place_img
+        (trip_place_no, trip_place_img_path)
+        VALUES
+        (#{tripPlaceNo}, #{s3Add})
+        ;
+    </insert>
+
+    <insert id="insertPlaceImgB">
+        INSERT INTO trip_place_b_img
+        (trip_place_no, trip_place_b_img_path)
+        VALUES
+        (#{tripPlaceNo}, #{s3Add})
+        ;
+    </insert>
+
+<!--    -->
+<!--    -->
+    <insert id="insertAlarmUserToUser">
+        insert into alarm_history
+        (alarm_history_sender, alarm_history_receiver, alarm_kinds_no, page_kinds_no)
+        values
+        (#{alarmHistorySender}, #{alarmHistoryReceiver}, #{alarmKindsNo}, #{pageKindsNo});
+        ;
+    </insert>
+
+    <select id="getAlarmKinds" resultType="com.example.demo.domain.GetAlarmKinds">
+        SELECT
+        ak.alarm_kinds_no,
+        ak.alarm_kinds_name_en,
+        ak.alarm_kinds_name_kr,
+        ak.alarm_kinds_title,
+        ak.alarm_kinds_text,
+        ak.server_kinds_no,
+        sk.server_kinds,
+        ak.alarm_kinds_useflag,
+        ak.insert_ts,
+        ak.update_ts
+        FROM
+        alarm_kinds as ak LEFT JOIN server_kinds AS sk ON ak.server_kinds_no = sk.server_kinds_no
         where
-        user_code_no = #{userCodeNo} and trip_course_diary_no = #{tripCourseDiaryNo}
-        ;
-    </delete>
-
-    <select id="getHotCourse" resultType="com.example.demo.domain.GetCourse">
-        SELECT
-        c.user_code_no,
-        u.nickname,
-        c.trip_course_no,
-        c.trip_course_code,
-        c.trip_course_name,
-        c.trip_course_text,
-        c.star_rating,
-        IFNULL(tcl.like_count, 0) as like_count,
-        '' as category_list,
-        c.trip_course_get_path,
-        c.trip_course_set_path,
-        c.insert_ts,
-        c.update_ts
-        FROM
-        trip_course AS c
-        LEFT JOIN user_code AS u ON c.user_code_no = u.user_code_no
-        LEFT JOIN (
-        SELECT tcl.trip_course_no, COUNT(*) as like_count FROM trip_course_like as tcl
-        GROUP BY tcl.trip_course_no
-        ) AS tcl ON c.trip_course_no = tcl.trip_course_no
-        WHERE
-        c.star_rating > #{starRating}
+        ak.alarm_kinds_no = #{alarmKindsNo} and ak.alarm_kinds_useflag = 1
         ;
     </select>
 
-    <select id="getCourseCategory" resultType="com.example.demo.domain.GetCategory">
-        SELECT
-        c.category_no,
-        c.category_name,
-        c.categoryKindsNo;
-        c.insert_ts,
-        c.update_ts
-        FROM
-        trip_course_category as tcc
-        INNER JOIN category AS c ON tcc.category_no = c.category_no
-        WHERE
-        tcc.trip_course_no = #{tripNo}
+    <select id="getUserNickname" resultType="String">
+        SELECT uc.nickname from user_code as uc where uc.user_code_no = #{alarmReceiver}
+        limit 1
         ;
     </select>
 
+    <select id="getToken" resultType="String">
+        SELECT uf.user_fcm_token from user_fcm as uf where uf.user_code_no = #{alarmReceiver}
+        limit 1
+        ;
+    </select>
+    <!--/-->
+    <!--/-->
+    <!--/-->
+    <!--/-->
+    <!--/-->
     <select id="getTripReport" resultType="com.example.demo.domain.GetTripReport">
         SELECT
         tc.user_code_no,
@@ -156,40 +123,39 @@
         ;
     </select>
 
-<!--    ■ trip_place AS tp WHERE tp.area_no = 1; 수정 필요-->
     <select id="getPlacePosInTripPlaceData" resultType="HashMap">
         SELECT
-            tp.trip_place_no,
-            tp.trip_place_latitude,
-            tp.trip_place_longitude
+        tp.trip_place_no,
+        tp.trip_place_latitude,
+        tp.trip_place_longitude
         FROM
-            trip_place AS tp WHERE tp.area_no = 1
+        trip_place AS tp WHERE tp.area_no = 1
         ;
     </select>
 
     <select id="getPlacesRecommand" resultType="com.example.demo.domain.GetPlace">
         SELECT
-            p.user_code_no,
-            u.nickname,
-            p.trip_place_no,
-            p.trip_place_code,
-            p.trip_place_name,
-            p.trip_place_add0,
-            p.trip_place_add1,
-            p.trip_place_add2,
-            p.trip_place_add3,
-            p.trip_place_text,
-            p.area_no,
-            p.world_flag,
-            p.star_rating,
-            IFNULL(tpl.like_count, 0) AS like_count,
-            '' as category_list,
-            p.trip_place_latitude,
-            p.trip_place_longitude,
-            p.trip_place_get_path,
-            p.trip_place_set_path,
-            p.insert_ts,
-            p.update_ts
+        p.user_code_no,
+        u.nickname,
+        p.trip_place_no,
+        p.trip_place_code,
+        p.trip_place_name,
+        p.trip_place_add0,
+        p.trip_place_add1,
+        p.trip_place_add2,
+        p.trip_place_add3,
+        p.trip_place_text,
+        p.area_no,
+        p.world_flag,
+        p.star_rating,
+        IFNULL(tpl.like_count, 0) AS like_count,
+        '' as category_list,
+        p.trip_place_latitude,
+        p.trip_place_longitude,
+        '' as place_img_list,
+        '' as place_b_img_list,
+        p.insert_ts,
+        p.update_ts
         FROM trip_place AS p
         LEFT JOIN user_code AS u ON p.user_code_no = u.user_code_no
         LEFT JOIN (
@@ -197,12 +163,28 @@
         GROUP BY tpl.trip_place_no
         ) AS tpl ON p.trip_place_no = tpl.trip_place_no
         WHERE
-            p.trip_place_no in
+        p.trip_place_no in
         <foreach collection="list" item="arr" open="(" close=")" separator=",">
             #{arr}
         </foreach>
         order by like_count desc
         limit 3
+        ;
+    </select>
+
+    <select id="getPlaceCategory" resultType="com.example.demo.domain.GetCategory">
+        SELECT
+        c.category_no,
+        c.category_name,
+        c.category_kinds_no,
+        c.category_useflag,
+        tpc.insert_ts,
+        tpc.update_ts
+        FROM
+        trip_place_category AS tpc
+        LEFT JOIN category AS c ON tpc.category_no = c.category_no
+        WHERE
+        trip_place_no = #{tripNo}
         ;
     </select>
 
@@ -227,11 +209,11 @@
 
     <select id="getMateRecommand" resultType="com.example.demo.domain.GetFollowing">
         SELECT
-            uc.user_code_no,
-            uc.nickname,
-            uc.user_id
+        uc.user_code_no,
+        uc.nickname,
+        uc.user_id
         FROM
-            user_code AS uc
+        user_code AS uc
         WHERE
         uc.user_code_no in
         <foreach collection="list" item="arr" open="(" close=")" separator=",">
@@ -241,277 +223,13 @@
         ;
     </select>
 
-    <select id="getPlaceMoreBySearch" resultType="com.example.demo.domain.GetPlace">
-        SELECT
-        p.user_code_no,
-        u.nickname,
-        p.trip_place_no,
-        p.trip_place_code,
-        p.trip_place_name,
-        p.trip_place_add0,
-        p.trip_place_add1,
-        p.trip_place_add2,
-        p.trip_place_add3,
-        p.trip_place_text,
-        p.area_no,
-        p.world_flag,
-        p.star_rating,
-        IFNULL(tpl.like_count, 0) AS like_count,
-        '' as category_list,
-        p.trip_place_latitude,
-        p.trip_place_longitude,
-        p.trip_place_get_path,
-        p.trip_place_set_path,
-        p.insert_ts,
-        p.update_ts
-        FROM
-        trip_place AS p
-        LEFT JOIN
-        user_code AS u ON p.user_code_no = u.user_code_no
-        LEFT JOIN (
-        SELECT tpl.trip_place_no, COUNT(*) as like_count FROM trip_place_like as tpl
-        GROUP BY tpl.trip_place_no
-        ) AS tpl ON p.trip_place_no = tpl.trip_place_no
-        WHERE
-        p.trip_place_name like CONCAT('%',#{inputText},'%') or
-        p.trip_place_add0 + p.trip_place_add1 + p.trip_place_add2 + p.trip_place_add3 like CONCAT('%',#{inputText},'%')
-        limit #{limitStart}, #{limitEnd}
+    <select id="getPlaceImgList" resultType="com.example.demo.domain.GetPlaceImg">
+        SELECT * FROM trip_place_img AS tpi WHERE tpi.trip_place_no = #{tripPlaceNo};
         ;
     </select>
 
-    <select id="getUserInfo" resultType="com.example.demo.domain.UserCode">
-        SELECT
-        uc.user_code_no,
-        uc.device_code_no,
-        uc.birthday,
-        uc.user_hp,
-        uc.user_seq,
-        uc.api_Id,
-        uc.user_id,
-        uc.user_email,
-        uc.nickname,
-        uc.entitle_no,
-        uc.experience,
-        f.feed_count,
-        CAST('' as int) as feed_follower,
-        CAST('' as int) as feed_following,
-        uc.point,
-        uc.purple,
-        uc.login_id,
-        uc.password,
-        uc.role_type,
-        uc.cidi,
-        uc.user_name,
-        uc.insert_ts,
-        uc.update_ts
-        FROM
-        user_code AS uc
-        LEFT JOIN (
-        SELECT f.user_code_no, COUNT(f.feed_no) AS feed_count FROM feed AS f WHERE f.user_code_no = #{userCodeNo} LIMIT 1) AS f
-        ON uc.user_code_no = f.user_code_no
-        WHERE
-        uc.user_code_no = #{userCodeNo}
-        limit 1
-        ;
-    </select>
-
-    <select id="getFeedFollower" resultType="HashMap">
-        SELECT fw.follower_user_code_no, COUNT(fw.user_code_no) as feed_follower FROM following as fw
-        WHERE
-        fw.follower_user_code_no = #{userCodeNo}
-        LIMIT 1
-        ;
-    </select>
-
-    <select id="getFeedFollowing" resultType="HashMap">
-        SELECT fw.user_code_no, COUNT(fw.follower_user_code_no) AS feed_following FROM following AS fw
-        WHERE
-        fw.user_code_no = #{userCodeNo}
-        LIMIT 1
-        ;
-    </select>
-
-    <select id="getFeedMine" resultType="com.example.demo.domain.GetFeedMine">
-        SELECT
-        f.user_code_no,
-        uc.user_id,
-        uc.nickname,
-        f.feed_no,
-        f.feed_code,
-        f.feed_text,
-        f.feed_loc_name,
-        f.feed_loc_longitude,
-        f.feed_loc_latitude,
-        f.feed_get_path,
-        f.feed_set_path,
-        '' as feed_comment,
-        '' as feed_like,
-        CAST('' as int) as comment_count,
-        fl.feed_like_count,
-        if(ISNULL(fl2.feed_no), 0, 1) AS feed_like_state,
-        f.insert_ts,
-        f.update_ts
-        FROM feed AS f
-        LEFT JOIN user_code AS uc ON f.user_code_no = uc.user_code_no
-        LEFT JOIN (SELECT fl.feed_no, COUNT(*) as feed_like_count FROM feed_like AS fl GROUP BY fl.feed_no) as fl ON f.feed_no = fl.feed_no
-        LEFT JOIN (SELECT DISTINCT * FROM feed_like AS fl2 WHERE fl2.user_code_no = #{userCodeNo}) as fl2 ON f.feed_no = fl2.feed_no
-        WHERE f.user_code_no = #{userCodeNo}
-        limit #{limitStart}, #{limitEnd}
-        ;
-    </select>
-
-    <select id="getFeedComments" resultType="com.example.demo.domain.GetFeedComments">
-        SELECT
-        f.user_code_no,
-        u.user_id,
-        u.nickname,
-        f.feed_comment_no,
-        f.feed_no,
-        f.feed_comment_text,
-        f.feed_parent,
-        f.feed_depth,
-        f.insert_ts,
-        '' as get_feed_comment_ss
-        FROM feed_comment AS f
-        LEFT JOIN user_code AS u ON f.user_code_no = u.user_code_no
-        WHERE
-        feed_no = #{feedNo} and
-        f.feed_parent IS null
-        ORDER BY
-        insert_ts desc
-        ;
-    </select>
-
-    <select id="getFeedCommentSs" resultType="com.example.demo.domain.GetFeedCommentSs">
-        SELECT
-        f.user_code_no,
-        u.user_id,
-        u.nickname,
-        f.feed_comment_no,
-        f.feed_no,
-        f.feed_comment_text,
-        f.feed_parent,
-        f.feed_depth,
-        f.insert_ts
-        FROM feed_comment AS f
-        LEFT JOIN user_code AS u ON f.user_code_no = u.user_code_no
-        WHERE
-        feed_no = #{feedNo} and
-        f.feed_parent IS not null and
-        f.feed_parent = #{feedCommentNo}
-        ORDER BY
-        f.insert_ts desc
-        ;
-    </select>
-
-    <select id="getFeedLike" resultType="com.example.demo.domain.GetFeedLike">
-        SELECT
-        l.user_code_no,
-        u.nickname
-        FROM
-        feed_like AS l
-        LEFT JOIN user_code AS u ON l.user_code_no = u.user_code_no
-        WHERE
-        feed_no = #{feedNo};
-        ;
-    </select>
-
-    <select id="getCourseMoreBySearch" resultType="com.example.demo.domain.GetCourseSearch">
-        SELECT
-        DISTINCT  *
-        FROM (
-        SELECT
-        a.trip_course_no,
-        a.trip_course_name,
-        a.place_count,
-        CASE
-        WHEN a.add like CONCAT('%',#{inputText},'%')
-        THEN '제주도'
-        ELSE null
-        END AS aa,
-        a.trip_course_get_path,
-        a.insert_ts,
-        a.update_ts
-        FROM
-        (
-        SELECT
-        tcp.trip_course_no,
-        tc.trip_course_name,
-        t.place_count,
-        CONCAT(tp.trip_place_add0, ' ', tp.trip_place_add1, ' ', tp.trip_place_add2, ' ', tp.trip_place_add3) AS 'add',
-        tc.trip_course_get_path,
-        tc.insert_ts
-        FROM trip_course_place AS tcp
-        LEFT JOIN trip_place AS tp ON tcp.trip_place_no = tp.trip_place_no
-        LEFT JOIN (
-        SELECT tcp.trip_course_no, count(tcp.trip_course_place_no) AS place_count from trip_course_place AS tcp
-        group BY tcp.trip_course_no
-        ) AS t ON tcp.trip_course_no = t.trip_course_no
-        LEFT JOIN trip_course AS tc ON tcp.trip_course_no = tc.trip_course_no
-        ) AS a
-        ) AS b WHERE b.aa IS NOT NULL
-        ORDER BY b.insert_ts DESC
-        limit #{limitStart}, #{limitEnd}
-        ;
-    </select>
-
-    <insert id="setCourse" parameterType="com.example.demo.domain.SetCourse" useGeneratedKeys="true" keyProperty="tripCourseNo">
-        INSERT INTO trip_course
-        (user_code_no, trip_course_no, trip_course_code, trip_course_name, trip_course_text, star_rating, review_count, trip_course_get_path, trip_course_set_path, insert_ts, update_ts)
-        VALUES
-        (#{userCodeNo}, #{tripCourseNo}, #{tripCourseCode}, #{tripCourseName}, #{tripCourseText}, #{starRating}, #{reviewCount}, #{tripCourseGetPath}, #{tripCourseSetPath}, #{insertTs}, #{updateTs})
-        ;
-    </insert>
-
-    <insert id="setCoursePlace" parameterType="java.util.List">
-        INSERT INTO trip_course_place
-        (trip_course_no, trip_place_no)
-        VALUES
-        <foreach collection="list" item="arr" separator=",">
-        (
-            ${arr.tripCourseNo},
-            ${arr.tripPlaceNo}
-        )
-        </foreach>
-        ;
-    </insert>
-
-    <insert id="insertToken">
-        insert into user_fcm
-        (user_code_no, user_fcm_token)
-        values
-        (#{userCodeNo}, #{userFcmToken});
-        ;
-    </insert>
-
-    <select id="getCourseBookmark" resultType="com.example.demo.domain.GetCourseBookmark">
-        SELECT
-        book.user_code_no,
-        c.user_code_no as user_code_no_first,
-        USER.nickname,
-        book.trip_course_no,
-        c.trip_course_name,
-        c.star_rating,
-        ifnull(tcl.like_count, 0) as like_count,
-        tcp.place_count,
-        '' as category_list,
-        c.trip_course_get_path,
-        c.insert_ts
-        FROM
-        trip_course_bookmarked as book
-        LEFT JOIN trip_course AS c ON book.trip_course_no = c.trip_course_no
-        LEFT JOIN user_code AS USER ON c.user_code_no = USER.user_code_no
-        LEFT JOIN (
-        SELECT tcl.trip_course_no, COUNT(*) as like_count FROM trip_course_like as tcl
-        GROUP BY tcl.trip_course_no
-        ) AS tcl ON book.trip_course_no = tcl.trip_course_no
-        LEFT JOIN (
-        SELECT tcp.trip_course_no, COUNT(*) AS place_count from trip_course_place AS tcp group by tcp.trip_course_no
-        ) AS tcp ON tcp.trip_course_no = book.trip_course_no
-        WHERE
-        book.user_code_no = #{userCodeNo}
-        ORDER BY
-        book.insert_ts desc
+    <select id="getPlaceBImgList" resultType="com.example.demo.domain.GetPlaceBImg">
+        SELECT * FROM trip_place_b_img AS tpbi WHERE tpbi.trip_place_no = #{tripPlaceNo};
         ;
     </select>
 </mapper>

@@ -13,11 +13,18 @@ repositories {
 }
 
 dependencies {
+	//이강원 s3
+	implementation "software.amazon.awssdk:s3:2.17.46"	 /* dev99ok - AWS S3 SDK 2.0 for Java */
+	implementation 'software.amazon.awssdk:core:2.17.46' /* dev99ok - AWS S3 SDK 2.0 for Java */
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1' /* sonic817 추가 */
+
 	//이강원 썸머노트
 	implementation group: 'commons-io', name: 'commons-io', version: '2.6'
 
 	//이강원 파이어베이스
+	//classpath 'com.google.gms:google-services:4.3.10'
 	implementation 'com.google.firebase:firebase-admin:6.8.1'
+	implementation 'com.google.firebase:firebase-messaging:21.1.0'
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -41,3 +48,5 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+apply plugin: 'com.google.gms.google-services'
