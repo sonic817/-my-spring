@@ -10,32 +10,28 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+	google()
 }
 
 dependencies {
-	//이강원 s3
-	implementation "software.amazon.awssdk:s3:2.17.46"	 /* dev99ok - AWS S3 SDK 2.0 for Java */
-	implementation 'software.amazon.awssdk:core:2.17.46' /* dev99ok - AWS S3 SDK 2.0 for Java */
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1' /* sonic817 추가 */
+	//이강원 엑셀
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 
-	//이강원 썸머노트
-	implementation group: 'commons-io', name: 'commons-io', version: '2.6'
-
-	//이강원 파이어베이스
-	//classpath 'com.google.gms:google-services:4.3.10'
-	implementation 'com.google.firebase:firebase-admin:6.8.1'
-	implementation 'com.google.firebase:firebase-messaging:21.1.0'
-	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
+	//스웨거
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 
+	//web
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
+	implementation "org.springframework.boot:spring-boot-starter-security"
+
+	//json
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'org.jsoup:jsoup:1.13.1'
 
@@ -43,10 +39,14 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	implementation 'org.jetbrains:annotations:20.1.0'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	//websocket
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-apply plugin: 'com.google.gms.google-services'
