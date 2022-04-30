@@ -2,4 +2,69 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="demo.mapper.TestMapper">
 
+    <select id="getNewCode" resultType="String">
+        SELECT
+        p.trip_place_code
+        FROM
+        trip_place AS p
+        WHERE
+        p.user_code_no = #{userCodeNo} and p.trip_place_code like CONCAT('%',#{today},'%')
+        ORDER BY
+        p.trip_place_no desc
+        LIMIT 1
+        ;
+    </select>
+
+    <insert id="insertTripPlace" parameterType="demo.domain.SetPlace" useGeneratedKeys="true" keyProperty="tripPlaceNo">
+        INSERT INTO trip_place
+        (user_code_no, trip_place_code, trip_place_name, trip_place_add0, trip_place_add1,
+        trip_place_add2, trip_place_add3, trip_place_text, trip_place_latitude, trip_place_longitude)
+        VALUES
+        (#{userCodeNo}, #{tripPlaceCode}, #{tripPlaceName}, #{tripPlaceAdd0}, #{tripPlaceAdd1},
+        #{tripPlaceAdd2}, #{tripPlaceAdd3}, #{tripPlaceText}, #{tripPlaceLatitude}, #{tripPlaceLongitude})
+        ;
+    </insert>
+
+    <select id="getCategoryNoList" resultType="Integer">
+        SELECT c.category_no FROM category AS c
+        WHERE
+        c.category_name in
+        <foreach collection="list" item="arr" open="(" close=")" separator=",">
+            #{arr}
+        </foreach>
+        ;
+    </select>
+
+    <insert id="insertCategory">
+        insert into trip_place_category
+        (trip_place_no, category_no)
+        values
+        (#{tripPlaceNo}, #{categoryNo})
+        ;
+    </insert>
+
+    <select id="getTag" resultType="demo.domain.Tag">
+        SELECT *
+        FROM
+        tag
+        WHERE
+        tag_name = #{tagName}
+        ;
+    </select>
+
+    <insert id="insertPlaceTag">
+        insert into trip_place_tag
+        (trip_place_no, tag_no)
+        values
+        (#{seqNo}, #{tagNo})
+        ;
+    </insert>
+
+    <insert id="insertTag" parameterType="demo.domain.Tag" useGeneratedKeys="true" keyProperty="tagNo">
+        insert into tag
+        (tag_name)
+        values
+        (#{tagName})
+        ;
+    </insert>
 </mapper>

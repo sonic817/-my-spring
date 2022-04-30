@@ -44,10 +44,10 @@ public class TestController {
 
     //region
     @GetMapping("/excel")
-    @ApiOperation(value = "테스트", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "접속중인 userCodeNo의 token을 넣어주세요.", required = false, dataType = "String", paramType = "header"),
-    })
+    @ApiOperation(value = "excel 파일을 읽어서, db에 저장하는 기능", notes = "")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "token", value = "접속중인 userCodeNo의 token을 넣어주세요.", required = false, dataType = "String", paramType = "header"),
+//    })
     @ResponseBody
     public JSONObject get(
             @ApiIgnore HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -58,6 +58,25 @@ public class TestController {
         boolean isSuccess = testService.inExcel(path);
 
         jSONOResponse.put("message", isSuccess);
+        return jSONOResponse;
+    }
+    //endregion
+
+
+    //region
+    @GetMapping("/img")
+    @ApiOperation(value = "이미지 url을 받아서 s3에 업로드하는 기능", notes = "")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "token", value = "접속중인 userCodeNo의 token을 넣어주세요.", required = false, dataType = "String", paramType = "header"),
+//    })
+    @ResponseBody
+    public JSONObject setImg(
+            @ApiIgnore HttpSession session, HttpServletRequest request, HttpServletResponse response
+    ) throws Exception {
+        JSONObject jSONOResponse = new JSONObject();
+
+        jSONOResponse = testService.setImg();
+
         return jSONOResponse;
     }
     //endregion
