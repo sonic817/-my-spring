@@ -4,12 +4,11 @@ import com.amazonaws.AmazonServiceException;
 import demo.domain.SetPlace;
 import demo.domain.Tag;
 import demo.mapper.TestMapper;
-import net.halowd.saveImg.SaveImg;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -205,10 +204,10 @@ public class TestService {
     }
 
     public JSONObject setImg() throws IOException {
+        JSONObject jSONOResponse = new JSONObject();
+
         //폴더만들기
         String folderName = "user/" + "10406" + "/" + "test" + "/" + "20220427" + "/";
-
-        JSONObject jSONOResponse = new JSONObject();
 
         String imgPath = "https://en.pimg.jp/045/032/301/1/45032301.jpg";
 
@@ -226,6 +225,26 @@ public class TestService {
         } catch (AmazonServiceException e) {
             jSONOResponse.put("result", "false");
             jSONOResponse.put("message", e.getMessage());
+        }
+
+        return jSONOResponse;
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public JSONObject tran() throws Exception {
+        JSONObject jSONOResponse = new JSONObject();
+
+        try {
+            testMapper.insertTran("안녕1");
+            testMapper.insertTran("안녕2");
+            testMapper.insertTran("안녕2");
+
+            jSONOResponse.put("result", "true");
+            jSONOResponse.put("message", "성공");
+        } catch (Exception e) {
+            jSONOResponse.put("result", "false");
+            jSONOResponse.put("message", e.getMessage());
+            throw new DBException(jSONOResponse, e.getMessage());
         }
 
         return jSONOResponse;

@@ -1,14 +1,11 @@
 package demo.controller;
 
 import demo.service.TestService;
+import demo.service.DBException;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -76,6 +73,30 @@ public class TestController {
         JSONObject jSONOResponse = new JSONObject();
 
         jSONOResponse = testService.setImg();
+
+        return jSONOResponse;
+    }
+    //endregion
+
+
+    //region
+    @GetMapping("/tran")
+    @ApiOperation(value = "롤백 테스트", notes = "")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "token", value = "접속중인 userCodeNo의 token을 넣어주세요.", required = false, dataType = "String", paramType = "header"),
+//    })
+    @ResponseBody
+    public JSONObject tran(
+            @ApiIgnore HttpSession session, HttpServletRequest request, HttpServletResponse response
+    ) throws Exception {
+        JSONObject jSONOResponse = new JSONObject();
+
+        try {
+            jSONOResponse = testService.tran();
+        } catch (DBException e) {
+            e.printStackTrace();
+            jSONOResponse = e.getValue();
+        }
 
         return jSONOResponse;
     }

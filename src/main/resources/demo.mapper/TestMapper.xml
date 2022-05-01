@@ -67,4 +67,12 @@
         (#{tagName})
         ;
     </insert>
+
+    <insert id="insertTran">
+        insert into tran
+        (tran_name)
+        values
+        (#{dummyStr})
+        ;
+    </insert>
 </mapper>

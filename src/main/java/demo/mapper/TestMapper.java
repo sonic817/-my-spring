@@ -17,4 +17,6 @@ public interface TestMapper {
     Tag getTag(String tagName);
     Integer insertPlaceTag(Integer seqNo, Integer tagNo);
     Integer insertTag(Tag tag);
+
+    Integer insertTran(String dummyStr);
 }
